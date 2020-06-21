@@ -2,7 +2,16 @@ extern crate prettytable;
 
 use prettytable::{Attr, Cell, Row, Table};
 
-pub fn display(headers: &Vec<String>, rows: &Vec<Vec<String>>) {
+pub fn display(headers: &Vec<String>, rows: &Vec<Vec<String>>, raw: bool) {
+    if raw {
+        for row in rows {
+            for cell in row {
+                print!("{}\t", cell);
+            }
+            println!("");
+        }
+        return;
+    }
     let mut table = Table::new();
 
     let mut th = Vec::new();

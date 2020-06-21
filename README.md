@@ -10,7 +10,7 @@ The below list is kind of a wishlist that I would want from an tool for this pur
 - [ ] Pretty routing tables
 - [x] Subnet expander
 - [x] Is an IP in a particular subnet
-- [ ] Parent Subnet for all the listed IPs
-- [ ] Parent Subnet for all the listed subnets
+- [x] Parent Subnet for all the listed IPs
+- [x] Parent Subnet for all the listed subnets
 - [ ] Possibly the smallest IP space(s) for a list of IPs
 - [ ] Possibly the smallest IP space(s) for a list of IP subnets

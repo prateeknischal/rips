@@ -1,5 +1,6 @@
 extern crate pnet;
 
+use crate::utils::display;
 use ipnetwork;
 use pnet::datalink;
 use pnet::util;
@@ -48,17 +49,19 @@ impl Interface {
     }
 }
 
-pub fn list_interfaces() {
+pub fn list_interfaces(raw: bool) {
     let ifs = datalink::interfaces();
     let mut res = Vec::<Interface>::new();
 
+    let mut v = Vec::<Vec<String>>::new();
     for it in ifs {
         for ip in &it.ips {
-            res.push(Interface::new(&it.name, &it.mac, ip, it.flags));
+            let x = Interface::new(&it.name, &it.mac, ip, it.flags);
+            v.push(x.serialize());
         }
     }
 
-    display(
+    display::display(
         &vec![
             String::from("Name"),
             String::from("MAC"),
@@ -66,29 +69,7 @@ pub fn list_interfaces() {
             String::from("Version"),
             String::from("Flags"),
         ],
-        &res,
+        &v,
+        raw,
     );
-}
-
-pub fn display(header: &Vec<String>, rows: &Vec<Interface>) {
-    let mut table = Table::new();
-
-    // Create the header part of the table
-    let mut headers_vec = Vec::new();
-    for c in header {
-        headers_vec.push(Cell::new(&c).with_style(Attr::Bold));
-    }
-    table.add_row(Row::new(headers_vec));
-
-    for r in rows {
-        // For all the interfaces
-        let row = r.serialize();
-        let mut row_vec = Vec::new();
-        for c in row {
-            // For all the records the serialize returns.
-            row_vec.push(Cell::new(&c));
-        }
-        table.add_row(Row::new(row_vec));
-    }
-    table.printstd();
 }
