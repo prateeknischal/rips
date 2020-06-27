@@ -30,6 +30,7 @@ FLAGS:
     -V, --version    Prints version information
 
 SUBCOMMANDS:
+    belong
     expand    Expand an IP or a subnet
     help      Prints this message or the help of the given subcommand(s)
     net       List all network interfaces
@@ -75,4 +76,19 @@ $ rips expand 192.168.1.4/30
 +--------------+
 | 192.168.1.7  |
 +--------------+
+```
+
+### Check if the list of childen belong to a parent
+```
+$ rips belong -i 10.57.162.0/24 10.57.162.142/30 10.57.162.161 10.57.161.91
+10.57.162.0/24
+10.57.162.142/30
+10.57.162.161
+
+$ echo $?
+1
+
+$ rips belong 10.57.162.0/24 10.57.162.142/30 10.57.162.161
+$ echo $?
+0
 ```

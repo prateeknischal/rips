@@ -4,7 +4,6 @@ use crate::utils::display;
 use ipnetwork;
 use pnet::datalink;
 use pnet::util;
-use prettytable::{Attr, Cell, Row, Table};
 
 #[derive(Debug)]
 pub struct Interface {

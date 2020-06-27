@@ -7,9 +7,8 @@ mod utils;
 use host::hostip;
 use ip::ipengine;
 
-use std::process;
-
 use clap::{App, Arg, SubCommand};
+use std::process;
 
 fn main() {
     let raw = Arg::with_name("raw")
@@ -26,11 +25,29 @@ fn main() {
         .about("List all network interfaces")
         .arg(raw.clone());
 
+    let belong = SubCommand::with_name("belong")
+        .arg(
+            Arg::with_name("in")
+                .help("Check if a list of IPs belong to a parent")
+                .takes_value(true)
+                .value_name("IPs")
+                .min_values(2),
+        )
+        .arg(raw.clone())
+        .arg(
+            Arg::with_name("invert")
+                .help("Print missing IPs if invert is true")
+                .short("i")
+                .long("invert")
+                .takes_value(false),
+        );
+
     let cli = App::new("rips")
         .version("0.1.0")
         .author("github @prateeknischal")
         .subcommand(expand)
         .subcommand(net)
+        .subcommand(belong)
         .arg(raw.clone());
 
     let matches = cli.get_matches();
@@ -49,20 +66,14 @@ fn main() {
 
         hostip::list_interfaces(raw);
     }
-    /*
-        hostip::list_interfaces(false);
-        ipengine::expand_subnet("10.57.162.96/25", true);
-        ipengine::find_parent(
-            vec![
-                "1.1.1.1",
-                "10.15.1.0/23",
-                "10.15.0.0/24",
-                "10.57.162.124",
-                "10.57.162.125",
-                "10.57.162.168",
-                "10.57.162.169",
-            ],
-            true,
-        );
-    */
+
+    if let Some(bl) = matches.subcommand_matches("belong") {
+        let invert = bl.is_present("invert");
+        if let Some(ips) = bl.values_of("in") {
+            let iplist = ips.collect::<Vec<&str>>();
+            let par = iplist[0];
+            let ok = ipengine::belongs(par, iplist, invert);
+            process::exit(!ok as i32);
+        }
+    }
 }

@@ -1,11 +1,13 @@
 extern crate ipnetwork;
 
 use crate::utils::display;
-use ipnetwork::{IpNetwork, NetworkSize};
+use ipnetwork::IpNetwork;
 use std::collections::VecDeque;
 
 /// Check if all the given IPs/subnets belong to a given subnet or not.
-pub fn belongs(parent: &str, child: Vec<&str>) -> bool {
+/// Depending on the flag invert, print included or excluded IPs.
+/// invert = true prints the matching IPs.
+pub fn belongs(parent: &str, child: Vec<&str>, invert: bool) -> bool {
     let parent_ip = parent.parse();
     if parent_ip.is_err() {
         return false;
@@ -13,12 +15,17 @@ pub fn belongs(parent: &str, child: Vec<&str>) -> bool {
     let parent_ip: IpNetwork = parent_ip.unwrap();
     let mut ok = true;
     for c in child {
-        match c.parse() {
-            Ok(p) => {
-                ok &= parent_ip.contains(p);
+        match c.parse::<IpNetwork>() {
+            Ok(ip) => {
+                let v = parent_ip.contains(ip.ip());
+                if v == invert {
+                    println!("{}", c);
+                }
+
+                ok = ok & v;
             }
             Err(_e) => {
-                eprintln!("The child IP {} is not valid", c);
+                println!("Failed to parse {}", c);
                 ok = false;
             }
         }
